@@ -13,41 +13,69 @@ from matplotlib import pyplot as plt
 from helper import getData
 from PIL import Image
 import os
+from skimage.io import imread
+from skimage.transform import resize
+import sys
 
-#%%
-
-# Define constants to be used here
-IMG_HEIGHT = 200 # Defines the image height that is desired for input of the network
-IMG_WIDTH = 200  # Defines the image width that is desired for the input to the network
-
-# Get all of the paths for the images in the data folder
-training_data = np.array(getData('data/Training_Set/Training_Set/Training', IMG_HEIGHT, IMG_WIDTH))
-validation_data = np.array(getData('data/Evaluation_Set/Evaluation_Set/Validation', IMG_HEIGHT, IMG_WIDTH))
-testing_data = np.array(getData('data/Test_Set/Test_Set/Test', IMG_HEIGHT, IMG_WIDTH))
-
-# Load in the labels data into pandas DF
-training_labels = pd.read_csv('data/Training_Set/Training_Set/RFMiD_Training_Labels.csv')
-validation_labels = pd.read_csv('data/Evaluation_Set/Evaluation_Set/RFMiD_Validation_Labels.csv')
-test_labels = pd.read_csv('data/Test_Set/Test_Set/RFMiD_Testing_labels.csv')
-
-#%%
-
-# Use the training location to print a few photos for reference
-training_loc = 'data/Training_Set/Training_Set/Training/{0}.png'
-
-plt.figure(figsize=(20,20))
-# Look at a few of the images before reading and normalizing them using the training data
-for i in range(6):
-    loc = training_loc.format(i+1)
-    img = Image.open(loc)
-    img.thumbnail((IMG_HEIGHT, IMG_WIDTH), Image.ANTIALIAS)  # Resizes the image to the size defined above
-    ax = plt.subplot(3, 2, i+1)
-    ax.title.set_text("{0}.png".format(i+1))
-    plt.imshow(img)
 #%%
 
 def main():
-    print('hello')
+    
+    # Declare constants here
+    TARGET_LOC = '../Target' # Path to the target folder which holds image data
+    IMG_HEIGHT = 400         # Defines the expected height of each image for the network
+    IMG_WIDTH = 600          # Defines the expected width for each image for the network
+    target_names = list()    # Used to store all of the outputs for the images
+    target_img = list()      # Holds the actual data of the images
+    
+    print("[+] Getting target images from target folder")
+    
+    # Get each image from folder, format it, and run it thorugh the network
+    for img_path in os.listdir(TARGET_LOC):
+        
+        img = imread(img_path)                          # Load the image
+        img = resize(img, (IMG_HEIGHT, IMG_WIDTH, 3))   # Resize the image
+        target_img.append(img)         # Append the img to the target image list
+        target_names.append(img_path.split('.')[0])  # Add the image name to names list for output
+        
+    # Cast image data as a numpy array
+    X = np.array(target_img)
+      
+    # Print some output for the user
+    print("Done...")
+    print("[+] {0} target images found".format(len(X)))
+    
+    # Check length of the images. If 0 return error
+    if len(X) == 0:
+        print("[!] make sure that all of the images you want to evaluate are in the target folder")
+        print("[!] Exiting program...")
+        sys.exit("Must be at least 1 image in the target folder")
+    else:
+        print("[+] Running images through network...")
+       
+    # Make model predictions and output to the user
+    print("\n----------Model Predictions:----------\n")
+    # Run each image through the network to get a prediction
+    for i in range(len(X)):
+        # Make the prediction
+        pred = 0  # TODO:
+            
+        print("Image Name: {0}".format(target_names))
+        print("Prediction: {0}\n".format(pred))
+    
+    # Ask user if they want to save the output to file
+    print("----------Evaluation complete----------\n")
+    
+    ans = input("Would you like to save output to file? ( y / n ): ")
+    
+    while(ans.lower() not in ['y', 'n']):
+        print("[!] Input must be 'y' or 'n'. Try again.")
+        ans = input("Would you like to save output to file? ( y / n ): ")
+        
+    if(ans.lower() == 'y'):
+        print("[+] Saving evaluation to the output folder")
+    else:
+        print("[+] Closing Program...")
 
 if __name__ == '__main__':
     main()

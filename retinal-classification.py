@@ -16,6 +16,7 @@ import os
 from skimage.io import imread
 from skimage.transform import resize
 import sys
+from datetime import datetime
 
 #%%
 
@@ -74,6 +75,16 @@ def main():
         
     if(ans.lower() == 'y'):
         print("[+] Saving evaluation to the output folder")
+        # Get the current datetime to name file
+        time = datetime.now()
+        time_str = time.strftime("%d-%m-%Y_%H:%M")
+        # Create the path for the final evaluation 
+        path = os.path.join('evaluation\\', time_str)
+        dir_name = os.getcwd()[:-3]
+        final_path = os.path.join(dir_name, path)
+        
+        # Create the directory
+        
     else:
         print("[+] Closing Program...")
 

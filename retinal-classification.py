@@ -10,16 +10,13 @@ import pandas as pd
 import keras
 import matplotlib.image as mpimg
 from matplotlib import pyplot as plt
-from helper import getData
-from PIL import Image
+from helper import makeDirectory, writeToOutputFile
 import os
 from skimage.io import imread
 from skimage.transform import resize
 import sys
-from datetime import datetime
 
 #%%
-
 def main():
     
     # Declare constants here
@@ -28,16 +25,18 @@ def main():
     IMG_WIDTH = 600          # Defines the expected width for each image for the network
     target_names = list()    # Used to store all of the outputs for the images
     target_img = list()      # Holds the actual data of the images
+    predictions = list()     # Holds all of the final predictions
     
     print("[+] Getting target images from target folder")
     
     # Get each image from folder, format it, and run it thorugh the network
     for img_path in os.listdir(TARGET_LOC):
         
-        img = imread(img_path)                          # Load the image
+        path = os.path.join(TARGET_LOC, img_path)       # Get the path to the image
+        img = imread(path)                              # Load the image
         img = resize(img, (IMG_HEIGHT, IMG_WIDTH, 3))   # Resize the image
-        target_img.append(img)         # Append the img to the target image list
-        target_names.append(img_path.split('.')[0])  # Add the image name to names list for output
+        target_img.append(img)                          # Append the img to the target image list
+        target_names.append(img_path.split('.')[0])     # Add the image name to names list for output
         
     # Cast image data as a numpy array
     X = np.array(target_img)
@@ -58,11 +57,15 @@ def main():
     print("\n----------Model Predictions:----------\n")
     # Run each image through the network to get a prediction
     for i in range(len(X)):
+        
         # Make the prediction
-        pred = 0  # TODO:
+        pred = 0  # TODO: Import the model at the beginning of the file and make predictions here
             
         print("Image Name: {0}".format(target_names))
         print("Prediction: {0}\n".format(pred))
+        
+        # Add the prediction to the predictions list
+        predictions.append(pred)
     
     # Ask user if they want to save the output to file
     print("----------Evaluation complete----------\n")
@@ -74,16 +77,16 @@ def main():
         ans = input("Would you like to save output to file? ( y / n ): ")
         
     if(ans.lower() == 'y'):
-        print("[+] Saving evaluation to the output folder")
-        # Get the current datetime to name file
-        time = datetime.now()
-        time_str = time.strftime("%d-%m-%Y_%H:%M")
-        # Create the path for the final evaluation 
-        path = os.path.join('evaluation\\', time_str)
-        dir_name = os.getcwd()[:-3]
-        final_path = os.path.join(dir_name, path)
+        print("[+] Saving to the evaluation folder")
         
         # Create the directory
+        path = makeDirectory()
+        print("[+] Output directory created at {0}".format(path))
+        
+        print("[+] Writing evaluation to file...")
+        # Write the output to the created file
+        writeToOutputFile(path, target_img, target_names, predictions)
+        print("[+] Done")
         
     else:
         print("[+] Closing Program...")

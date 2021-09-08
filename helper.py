@@ -5,7 +5,6 @@ Created on Wed Sep  1 17:18:11 2021
 @author: Jacob
 """
 
-#%%
 from datetime import datetime
 from PIL import Image
 import os
@@ -52,19 +51,37 @@ def writeToOutputFile(path, predictions):
     for the user.'''
     
     TARGET_LOC = '../Target' # Path to the target folder which holds image data
+    filePaths = os.listdir(TARGET_LOC)  # Get all of the image names in the target directory
+    
     # Create the directory to the images file where all of the images will be stored
     image_dir = os.path.join(path, 'images')
+    outputFile = os.path.join(path, 'output.txt')  # Create the path for the output text file
+    
+    # Create the images directory
     os.mkdir(image_dir)
     
-    # reread all of the images from the target folder so that the original resolution is maintained
-    for file_path in os.listdir(TARGET_LOC):
+    # Open the text file and write the appropriate information to file and save images to folder
+    with open(outputFile, 'w') as f:
         
-        tar_path = os.path.join(TARGET_LOC, file_path)  # Get the path from the target folder
-        image = Image.open(tar_path)                    # Load full resolution image
-        # Get the new location to save the file
-        new_loc = os.path.join(image_dir, file_path)
-        img = image.save(new_loc)  # Save the full res image to the new images folder
+        # Create the header for the file
+        current_time = datetime.now()
+        current_time = current_time.strftime('%A-%m-%Y_%I:%M %p')
+        f.write("\nTime: {0}\n".format(current_time))
         
-        # Write the predictions for the images into a txt file
+        f.write("---------Evaluation of Retinal Scans----------\n")
+        
+        # reread all of the images from the target folder so that the original resolution is maintained
+        for (fileName, pred) in zip(filePaths, predictions):
+        
+            tar_path = os.path.join(TARGET_LOC, fileName)   # Get the path from the target folder
+            image = Image.open(tar_path)                    # Load full resolution image
+            
+            f.write("Image Name: {0}\n".format(fileName))
+            # Get the new location to save the file
+            new_loc = os.path.join(image_dir, fileName)
+            img = image.save(new_loc)  # Save the full res image to the new images folder
+        
+            # Write the predictions for the images into a txt file
+            f.write("Prediction Value: {0}\n".format(pred))
     
     

@@ -85,7 +85,7 @@ def main():
         
         print("[+] Writing evaluation to file...")
         # Write the output to the created file
-        writeToOutputFile(path, target_img, target_names, predictions)
+        writeToOutputFile(path, predictions)
         print("[+] Done")
         
     else:

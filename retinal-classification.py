@@ -21,13 +21,19 @@ def main():
     
     # Declare constants here
     TARGET_LOC = '../Target' # Path to the target folder which holds image data
+    MODELS_LOC = '../models' # Path to the models folder which holds the trained models
     IMG_HEIGHT = 400         # Defines the expected height of each image for the network
     IMG_WIDTH = 600          # Defines the expected width for each image for the network
+    
     target_names = list()    # Used to store all of the outputs for the images
     target_img = list()      # Holds the actual data of the images
     predictions = list()     # Holds all of the final predictions
     
-    print("[+] Getting target images from target folder")
+    # Load in the model / models here
+    print("[+] Loading model")
+    model = None  # TODO: Load in the model here
+    
+    print("[+] Getting images from target folder")
     
     # Get each image from folder, format it, and run it thorugh the network
     for img_path in os.listdir(TARGET_LOC):
@@ -42,7 +48,6 @@ def main():
     X = np.array(target_img)
       
     # Print some output for the user
-    print("Done...")
     print("[+] {0} target images found".format(len(X)))
     
     # Check length of the images. If 0 return error
@@ -51,7 +56,7 @@ def main():
         print("[!] Exiting program...")
         sys.exit("Must be at least 1 image in the target folder")
     else:
-        print("[+] Running images through network...")
+        print("[+] Running images through model...")
        
     # Make model predictions and output to the user
     print("\n----------Model Predictions:----------\n")
@@ -61,14 +66,14 @@ def main():
         # Make the prediction
         pred = 0  # TODO: Import the model at the beginning of the file and make predictions here
             
-        print("Image Name: {0}".format(target_names))
+        print("Image Name: {0}".format(target_names[i]))
         print("Prediction: {0}\n".format(pred))
         
         # Add the prediction to the predictions list
         predictions.append(pred)
     
     # Ask user if they want to save the output to file
-    print("----------Evaluation complete----------\n")
+    print("----------Evaluation complete----------")
     
     ans = input("Would you like to save output to file? ( y / n ): ")
     
@@ -77,19 +82,21 @@ def main():
         ans = input("Would you like to save output to file? ( y / n ): ")
         
     if(ans.lower() == 'y'):
-        print("[+] Saving to the evaluation folder")
+        print("[+] Output will be saved to the evaluation folder")
         
         # Create the directory
         path = makeDirectory()
-        print("[+] Output directory created at {0}".format(path))
+        print("[+] Output files created at {0}".format(path))
         
         print("[+] Writing evaluation to file...")
         # Write the output to the created file
         writeToOutputFile(path, predictions)
-        print("[+] Done")
+        print("[+] Completed")
         
     else:
         print("[+] Closing Program...")
 
+
+#%%
 if __name__ == '__main__':
     main()

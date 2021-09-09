@@ -66,9 +66,9 @@ def writeToOutputFile(path, predictions):
         # Create the header for the file
         current_time = datetime.now()
         current_time = current_time.strftime('%A-%m-%Y_%I:%M %p')
-        f.write("\nTime: {0}\n".format(current_time))
+        f.write("\nTime: {0}\n\n".format(current_time))
         
-        f.write("---------Evaluation of Retinal Scans----------\n")
+        f.write("---------Evaluation of Retinal Scans----------\n\n")
         
         # reread all of the images from the target folder so that the original resolution is maintained
         for (fileName, pred) in zip(filePaths, predictions):
@@ -82,6 +82,6 @@ def writeToOutputFile(path, predictions):
             img = image.save(new_loc)  # Save the full res image to the new images folder
         
             # Write the predictions for the images into a txt file
-            f.write("Prediction Value: {0}\n".format(pred))
+            f.write("Prediction Value: {0}\n\n".format(pred))
     
     

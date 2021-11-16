@@ -21,7 +21,7 @@ def main():
     
     # Declare constants here
     TARGET_LOC = '../Target' # Path to the target folder which holds image data
-    MODELS_LOC = '../models' # Path to the models folder which holds the trained models
+    MODELS_LOC = '../models/model_binary' # Path to the models folder which holds the trained models
     IMG_HEIGHT = 400         # Defines the expected height of each image for the network
     IMG_WIDTH = 600          # Defines the expected width for each image for the network
     
@@ -31,7 +31,7 @@ def main():
     
     # Load in the model / models here
     print("[+] Loading model")
-    model = None  # TODO: Load in the model here
+    model = keras.models.load_model(MODELS_LOC, compile=True)
     
     print("[+] Getting images from target folder")
     
@@ -46,7 +46,7 @@ def main():
         
     # Cast image data as a numpy array
     X = np.array(target_img)
-      
+    #print(X[1].shape) 
     # Print some output for the user
     print("[+] {0} target images found".format(len(X)))
     
@@ -60,20 +60,20 @@ def main():
        
     # Make model predictions and output to the user
     print("\n----------Model Predictions:----------\n")
-    # Run each image through the network to get a prediction
-    for i in range(len(X)):
-        
-        # Make the prediction
-        pred = 0  # TODO: Import the model at the beginning of the file and make predictions here
-            
-        print("Image Name: {0}".format(target_names[i]))
-        print("Prediction: {0}\n".format(pred))
-        
-        # Add the prediction to the predictions list
-        predictions.append(pred)
+    
+    # Run all of the images through the model
+    pred = model.predict(X)
+    # Go through each image and make a prediction
+    for i in range(len(pred)):
+        # Get the name of the image and the prediction value
+        name = target_names[i]
+        p = pred[i]
+        # Print out some output for the user
+        print("Image Name: {0}".format(name), end=' => ')
+        print("Prediction: {0}".format(p))
     
     # Ask user if they want to save the output to file
-    print("----------Evaluation complete----------")
+    print("\n----------Evaluation complete----------")
     
     ans = input("Would you like to save output to file? ( y / n ): ")
     
@@ -82,7 +82,7 @@ def main():
         ans = input("Would you like to save output to file? ( y / n ): ")
         
     if(ans.lower() == 'y'):
-        print("[+] Output will be saved to the evaluation folder")
+        print("\n[+] Output will be saved to the evaluation folder")
         
         # Create the directory
         path = makeDirectory()
@@ -90,13 +90,13 @@ def main():
         
         print("[+] Writing evaluation to file...")
         # Write the output to the created file
-        writeToOutputFile(path, predictions)
+        writeToOutputFile(path, pred)
         print("[+] Completed")
+    
         
-    else:
-        print("[+] Closing Program...")
+    print("[+] Closing Program...")
 
 
-#%%
+y#%%
 if __name__ == '__main__':
     main()
